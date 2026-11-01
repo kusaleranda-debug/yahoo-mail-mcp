@@ -7,23 +7,17 @@ Allow about 30 minutes.
 
 ---
 
-## Step 1: Secure your Yahoo account first
-NordVPN flagged a leaked password linked to your Yahoo address, so do this before connecting anything:
-1. Go to https://login.yahoo.com/account/security
-2. **Change your password.**
-3. Turn on **2-step verification**. Yahoo requires this before it will give you an app password.
-
-## Step 2: Create a Yahoo app password
-An app password is a separate password just for this connector. Your real password stays private, and you can revoke the app password at any time.
-1. On the same Account Security page, click **Generate app password** (or "Manage app passwords").
+## Step 1: Create a Yahoo app password
+An app password is a separate password just for this connector. Your real password stays private, and you can revoke the app password at any time. Yahoo only offers app passwords once 2-step verification is turned on.
+1. Go to https://login.yahoo.com/account/security and click **Generate app password** (or "Manage app passwords").
 2. Name it `Claude`, then click **Generate**.
 3. Copy the 16-letter password somewhere safe for the next few minutes. **Don't paste it into a chat with Claude.**
 
-## Step 3: Install Node.js (skip this if you already have it)
-1. Open **PowerShell** and type `node -v`. If you see a version like `v20.x` or higher, skip to Step 4.
+## Step 2: Install Node.js (skip this if you already have it)
+1. Open **PowerShell** and type `node -v`. If you see a version like `v20.x` or higher, skip to Step 3.
 2. Otherwise download the **LTS** installer from https://nodejs.org, run it with the default options, then close and reopen PowerShell.
 
-## Step 4: Put the connector on your PC
+## Step 3: Put the connector on your PC
 1. Create a folder: `C:\Users\<your-username>\yahoo-mail-mcp`
 2. Save `index.js` and `package.json` (the files Claude gave you) into that folder.
 3. In PowerShell, run:
@@ -32,17 +26,17 @@ An app password is a separate password just for this connector. Your real passwo
    npm install
    ```
 
-## Step 5: Test the login
-Still in PowerShell, run these lines. Use your real Yahoo address and the app password from Step 2:
+## Step 4: Test the login
+Still in PowerShell, run these lines. Use your real Yahoo address and the app password from Step 1:
 ```powershell
-$env:YAHOO_EMAIL = "kusal_eranda@yahoo.com"
+$env:YAHOO_EMAIL = "you@yahoo.com"
 $env:YAHOO_APP_PASSWORD = "your-16-letter-app-password"
 npm run test-login
 ```
 You should see `Login OK. Folders: Inbox, Sent, Draft, Trash, Bulk, ...`.
 If you see `Login failed`, check the address, and make sure you used the **app password**, not your normal password.
 
-## Step 6: Add it to the Claude desktop app
+## Step 5: Add it to the Claude desktop app
 1. In the Claude desktop app, open **Settings → Developer → Edit Config**. This opens `claude_desktop_config.json`, which lives in `%APPDATA%\Claude\`.
 2. Add a `yahoo-mail` entry under `mcpServers`. If the file is empty, replace everything with this:
    ```json
@@ -52,7 +46,7 @@ If you see `Login failed`, check the address, and make sure you used the **app p
          "command": "node",
          "args": ["C:\\Users\\<your-username>\\yahoo-mail-mcp\\index.js"],
          "env": {
-           "YAHOO_EMAIL": "kusal_eranda@yahoo.com",
+           "YAHOO_EMAIL": "you@yahoo.com",
            "YAHOO_APP_PASSWORD": "your-16-letter-app-password"
          }
        }
@@ -63,7 +57,7 @@ If you see `Login failed`, check the address, and make sure you used the **app p
    - If the file already has other servers, add the `"yahoo-mail": { ... }` block inside the existing `mcpServers` and separate it with a comma.
 3. Save the file, then **fully quit** the Claude desktop app (right-click the tray icon and choose Quit) and reopen it.
 
-## Step 7: Try it
+## Step 6: Try it
 In a new chat in the desktop app, ask:
 - "List my Yahoo folders"
 - "Search my Yahoo inbox for bills from the last 6 months"
@@ -89,5 +83,5 @@ In a new chat in the desktop app, ask:
 
 ## Troubleshooting
 - **Yahoo tools don't appear in Claude:** check the JSON for missing commas or single backslashes, then fully quit and reopen the app. Settings → Developer shows the server's status and any error.
-- **"node is not recognized":** reinstall Node.js (Step 3), or use the full path `"C:\\Program Files\\nodejs\\node.exe"` as the `command`.
+- **"node is not recognized":** reinstall Node.js (Step 2), or use the full path `"C:\\Program Files\\nodejs\\node.exe"` as the `command`.
 - **Login failed:** regenerate the app password and update it in both the test and the config file.
